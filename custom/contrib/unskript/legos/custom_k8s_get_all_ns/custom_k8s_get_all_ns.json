@@ -1,0 +1,11 @@
+{
+  "action_title": "Custom Kubectl Get All Namespaces",
+  "action_description": "Custom Kubectl Get All Namespaces",
+  "action_type": "LEGO_TYPE_K8S",
+  "action_entry_function": "custom_k8s_get_all_ns",
+  "action_needs_credential": "true",
+  "action_output_type": "ACTION_OUTPUT_TYPE_STR",
+  "action_is_check": "false",
+  "action_supports_iteration": "true",
+  "action_supports_poll": "true"
+}
