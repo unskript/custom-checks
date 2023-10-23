@@ -1,3 +1,6 @@
 [submodule "awesome"]
-	path = awesome
+	path = Awesome-CloudOps-Automation
+	url = https://github.com/unskript/Awesome-CloudOps-Automation.git
+[submodule "Awesome-CloudOps-Automation"]
+	path = Awesome-CloudOps-Automation
 	url = https://github.com/unskript/Awesome-CloudOps-Automation.git
