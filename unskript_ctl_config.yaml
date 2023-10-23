@@ -134,7 +134,7 @@ notification:
   # Slack Notification setting
   Slack:
     enable: true
-    web-hook-url: https://hooks.slack.com/services/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
+    web-hook-url: "" 
     channel-name: test-alerting
     verbose: false #Not yet supported
   Email:
