@@ -18,7 +18,10 @@ version: 1.0.0
 global:
    # if enable_runbooks is enabled, jupyterlab is launched so that one can open
    # runbooks in jupyterlab.
-   enable_runbooks: false
+   enable_runbooks: true
+   # audit_period in days. Number of days worth of audit data to be kept.
+   # Any date older than this number of days, will be deleted.
+   audit_period: 90
 
 #
 # Checks section
@@ -28,9 +31,7 @@ global:
 checks:
   # Arguments common to all checks, like region, namespace, etc.
   arguments:
-    # global is applicable for all checks
     global:
-       namespace: lightbeam 
        region: us-west-2
 
 # Credential section
@@ -42,13 +43,13 @@ credential:
   aws:
    - name: awscreds
      enable: false
-     access-key: AKIAYF54LLVCKNK64WUR
-     secret-access-key: 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
+     access-key: ""
+     secret-access-key: ""
 
   # Kubernetes connector details
   k8s:
    - name: k8screds
-     enable: true
+     enable: false
      kubeconfig: ""
 
   # GCP connector details
@@ -60,46 +61,49 @@ credential:
   # Elasticsearch connector details
   elasticsearch:
    - name: escreds
-     enable: true
-     server: http://lightbeam-elasticsearch-master.lightbeam.svc.cluster.local:9200/ 
-     #api-key: ""
-     #no-verify-ssl: ""
+     enable: false
+     host: ""
+     api-key: ""
+     no-verify-ssl: ""
 
   # Redis connector details
   redis:
    - name: rediscreds
-     enable: true
-     host: lb-redis-master-0.lb-redis-headless.lightbeam.svc.cluster.local 
-     #username: ""
-     #password: ""
-     #database: ""
-     #use-ssl: ""
+     enable: false
+     host: ""
+     port: ""
+     username: ""
+     password: ""
+     database: ""
+     use-ssl: ""
 
   # Postgres connector details
   postgres:
    - name: postgrescreds
-     enable: true
-     host: postgres.lightbeam.svc.cluster.local
-     username: kong 
-     password: GGuFxJBBxsD
-     database: kong 
+     enable: false
+     host: ""
+     port: ""
+     username: ""
+     password: ""
+     database: ""
 
   # Mongodb connector details
   mongodb:
    - name: mongodbcreds
-     enable: true
-     host: lightbeam-mongodb-0.lightbeam-mongodb-headless.lightbeam.svc.cluster.local 
-     username: root 
-     password: 4EXlEkd6LPjW 
+     enable: false
+     host: ""
+     port: ""
+     username: ""
+     password: ""
 
   # Kafka connector details
   kafka:
    - name: kafkacreds
-     enable: true
-     broker: lightbeam-kafka.lightbeam.svc.cluster.local 
-     #username: ""
-     #password: ""
-     zookeeper: lightbeam-kafka-zookeeper.lightbeam.svc.cluster.local 
+     enable: false
+     broker: ""
+     username: ""
+     password: ""
+     zookeeper: ""
 
   # Rest connector details
   rest:
@@ -113,18 +117,21 @@ credential:
   # Vault connector details
   vault:
    - name: vaultcreds
-     enable: true 
-     url: https://lb-vault.lightbeam.svc.cluster.local:8200/
-     token: cy53OHNOYjNJMW16N2duSGVvaFVvY2gzUGQ 
+     enable: false
+     url: ""
+     token: ""
 
   # Keycloak connector details
   keycloak:
    - name: keycloakcreds
-     enable: true
-     server-url: http://lb-keycloak.lightbeam.svc.cluster.local/auth/ 
-     realm: master
-     username: lbadmin 
-     password: 8vPybIvHB2fv 
+     enable: false
+     server-url: ""
+     realm: ""
+     client-id: ""
+     username: ""
+     password: ""
+     client-secret: ""
+     no-verify-certs: ""
 
 #
 # Notification section
@@ -133,9 +140,9 @@ credential:
 notification:
   # Slack Notification setting
   Slack:
-    enable: true
-    web-hook-url: "" 
-    channel-name: test-alerting
+    enable: false
+    web-hook-url: ""
+    channel-name: ""
     verbose: false #Not yet supported
   Email:
     verbose: true #Not yet supported
@@ -153,25 +160,23 @@ notification:
       from-email: ""
     SES:
       access_key: ""
-      secret_acess: ""
-      region: us-west-2
+      secret_access: ""
+      region: ""
       to-email: ""
       from-email: ""
     Sendgrid:
       api_key: ""
       to-email: ""
-      from-email: support@unskript.com
-
-
+      from-email: ""
 #
 # Job section
 #
 # Job detail contains information about what all unskript-ctl can run.
 jobs:
-  - name: test # Unique name
+  - name: "" # Unique name
     # The results of the job to be notified or not.
     notify: true
-    enable: true
+    enable: false
     # Specific checks to run
     # Not supported: multiple checks, only single check support for now.
     checks: []
@@ -213,15 +218,7 @@ jobs:
     #   - nomad
     #   - netbox
     #   - opsgenie
-    connector_types: 
-     - k8s
-     - vault
-     - keycloak
-     - postgres
-     - redis
-     - kafka
-     - elasticsearch
-     - mongodb
+    connector_types: []
     # Custom scripts to be run.
     # Not supported
     custom_scripts: []
@@ -231,12 +228,12 @@ jobs:
 #
 # You can configure multiple schedules.
 scheduler:
-  - enable: true
+  - enable: false
     # Cadence is specified in cron syntax. More information about the syntax can
     # be found in https://crontab.guru
     # minute  hour  day (of month)  month  day (of week)
     #   *      *          *           *        *
     # Example: "*/30 * * * *"   <= This will run every 30 Minutes
-    cadence: "*/5 * * * *"
+    cadence: "*/60 * * * *"
     # Name of the job to add to the schedule
-    job_name: test
+    job_name: ""
