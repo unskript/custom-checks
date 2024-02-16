@@ -1,0 +1,185 @@
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE
+#
+#
+version: 1.0.0
+#
+# Global section
+#
+# Global config
+#
+global:
+   # if enable_runbooks is enabled, jupyterlab is launched so that one can open
+   # runbooks in jupyterlab.
+   enable_runbooks: true
+#
+# Checks section
+#
+# Check specific configuration. For eg, arguments.
+#
+checks:
+  # Arguments common to all checks, like region, namespace, etc.
+  arguments:
+    global:
+      service_with_no_endpoint_whitelist:
+        - lightbeam-kafka-zookeeper-metrics
+      matrix:
+       namespace: [lightbeam, unskript]
+  priority:
+    p0:
+     - k8s_get_memory_utilization_of_services
+     - k8s_get_expiring_certificates
+    p1:
+     - k8s_get_unbound_pvcs
+     - k8s_get_frequently_restarting_pods
+# Credential section
+#
+# uncomment the relevant sections below to enable respective credential
+#
+credential:
+  # AWS connector details
+  aws:
+   - name: awscreds
+     enable: true
+     access-key: ${LIGHTBEAM_AWS_ACCESS_KEY_ID}
+     secret-access-key: ${LIGHTBEAM_AWS_SECRET_ACCESS_KEY}
+  # Kubernetes connector details
+  k8s:
+   - name: k8screds
+     enable: true
+     kubeconfig: ""
+  # GCP connector details
+  # gcp:
+  #  - name: k8screds
+  #    enable: true
+  #    credential_json: ${LB_CREDS_GCP_CREDENTIAL_JSON}
+  # Elasticsearch connector details
+  elasticsearch:
+   - name: elasticsearchcreds
+     enable: true
+     host: ${ELASTICSEARCH_HOSTS}
+  #    api_key: ${LB_CREDS_ES_KEY}
+     no-verify-certs: ${LB_CREDS_ES_VERIFY_SSL:-true}
+  # Redis connector details
+  redis:
+   - name: rediscreds
+     enable: true
+     host: ${REDIS_HOSTNAME}
+     port: ${REDIS_PORT}
+  #    username: ${LB_CREDS_REDIS_USERNAME}
+  #    password: ${LB_CREDS_REDIS_PASSWORD}
+  #    database: ${LB_CREDS_REDIS_DATABASE}
+  #    use-ssl: ${LB_CREDS_REDIS_USE_SSL:-false}
+  # Postgres connector details
+  postgres:
+   - name: postgrescreds
+     enable: true
+     host: ${POSTGRES_HOST}
+     port: ${POSTGRES_PORT}
+     username: ${POSTGRES_USERNAME}
+     password: ${POSTGRES_PASSWORD}
+     database: ${POSTGRES_DB_NAME}
+  # Mongodb connector details
+  mongodb:
+   - name: mongodbcreds
+     enable: true
+     host: ${MONGODB_HOSTNAME}
+     port: ${MONGODB_PORT}
+     username: ${MONGODB_USERNAME}
+     password: ${MONGODB_PASSWORD}
+  # Kafka connector details
+  kafka:
+   - name: kafkacreds
+     enable: true
+     broker: ${KAFKA_BOOTSTRAP_SERVERS}:${KAFKA_PORT}
+     zookeeper: ${ZOOKEEPER_HOST}:${ZOOKEEPER_PORT}
+  # Rest connector details
+  rest:
+   - name: restcreds
+     enable: false
+     base-url: ""
+     username: ""
+     password: ""
+     headers: ""
+  # Vault connector details
+  vault:
+   - name: vaultcreds
+     enable: true
+     url: ${VAULT_ADDR}
+     token: ${VAULT_TOKEN}
+  # Keycloak connector details
+  keycloak:
+   - name: keycloakcreds
+     enable: true
+     server-url: ${KEYCLOAK_URL}
+     realm: ${KEYCLOAK_REALM}
+     client-id: ${KEYCLOAK_CLIENT_ID}
+     username: ${SYS_ADMIN_USER_NAME}
+     password: ${SYS_ADMIN_USER_PASSWORD}
+  #    client-secret: ${LB_CREDS_KEYCLOAK_CLIENT_SECRET}
+  #    no-verify-certs: ${LB_CREDS_KEYCLOAK_NO_VERIFY_CERTS:-true}
+#
+# Notification section
+#
+# uncomment the relevant sections below to enable either slack or email notification
+notification:
+  # Slack Notification setting
+  Slack:
+    enable: ${SLACK_NOTIFICATION_ENABLED}
+    web-hook-url: ${LB_NOTIFICATION_SLACK_WEBHOOK_URL}
+    channel-name: ${LB_NOTIFICATION_SLACK_CHANNEL_NAME}
+    verbose: false #Not yet supported
+  Email:
+    verbose: true #Not yet supported
+    enable: true 
+    provider: Sendgrid 
+    SMTP:
+      smtp-host: ${LB_NOTIFICATION_SMTP_SERVER}
+      smtp-user: ${LB_NOTIFICATION_USERNAME}
+      smtp-password: ${LB_NOTIFICATION_PASSWORD}
+      to-email: ${LB_NOTIFICATION_RECEIVER_EMAIL}
+      from-email: no-reply@unskript.com
+    SES:
+      access_key: ${LB_NOTIFICATION_SMTP_SERVER}
+      secret_acess: ${LB_NOTIFICATION_USERNAME}
+      region: us-west-2
+      to-email: ${LB_NOTIFICATION_RECEIVER_EMAIL}
+      from-email: no-reply@unskript.com
+    Sendgrid:
+      api_key: ${LB_SENDGRID_API_KEY} 
+      to-email: ${LB_NOTIFICATION_RECEIVER_EMAIL}
+      from-email: no-reply@unskript.com
+#
+# Job section
+#
+# Job detail contains information about what all unskript-ctl can run.
+jobs:
+  - name: lightbeam
+    notify: true
+    enable: true
+    info:
+      - keycloak_get_audit_report
+    checks: []
+    suites: []
+    connector_types: []
+    custom_scripts:
+     - /usr/local/bin/lb_pvc.sh 
+#
+# Scheduler section
+#
+# You can configure multiple schedules.
+scheduler:
+  - enable: true
+    # Cadence is specified in cron syntax. More information about the syntax can
+    # be found in https://crontab.guru
+    # minute  hour  day (of month)  month  day (of week)
+    #   *      *          *           *        *
+    # Example: "*/30 * * * *"   <= This will run every 30 Minutes
+    cadence: "0 0 * * *"
+    # Job to add to the schedule
+    job_name: lightbeam
+
+remote_debugging:
+  enable: true
+  ovpn_file: /tmp/client-abc.ovpn
+  upload_log_files_cadence: 0 0 * * *
