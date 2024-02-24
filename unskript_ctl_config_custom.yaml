@@ -32,6 +32,12 @@ checks:
     p1:
      - k8s_get_unbound_pvcs
      - k8s_get_frequently_restarting_pods
+info:
+  arguments:
+    global:
+      matrix:
+        namespace: [lightbeam, unskript]
+
 # Credential section
 #
 # uncomment the relevant sections below to enable respective credential
@@ -141,7 +147,7 @@ notification:
       from-email: no-reply@unskript.com
     SES:
       access_key: ${LB_NOTIFICATION_SMTP_SERVER}
-      secret_acess: ${LB_NOTIFICATION_USERNAME}
+      secret_access: ${LB_NOTIFICATION_USERNAME}
       region: us-west-2
       to-email: ${LB_NOTIFICATION_RECEIVER_EMAIL}
       from-email: no-reply@unskript.com
